@@ -1,14 +1,18 @@
+import os
 from math import floor
 
-from flask import Flask, render_template, Response, send_from_directory, session, request
+from flask import Flask, render_template, Response, send_from_directory, session, request, flash, redirect, url_for
 from flask_socketio import SocketIO, emit
 import json
 import time
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'videos'
 app.secret_key = 'jeV43V1KTG0ywgO1VGOdUfWzIiU51KoLYcrAIqdtpd7ukQC8LOKSgSjC2fvT'.encode('utf8')
 socketio = SocketIO(app, async_mode=None)
 
+ALLOWED_EXTENSIONS = {'mp4'}
 connected_list = []
 host_id = ""
 time_ask_complete = True
@@ -33,6 +37,11 @@ def send_js(path):
 @app.route('/videos/<path>')
 def send_videos(path):
     return send_from_directory('videos', path)
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.route('/sync')
@@ -104,10 +113,29 @@ def role_call():
     broadcast("role_call", "")
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html',
-                           sync_mode=socketio.async_mode)
+    if request.method == 'POST':
+        print("Uploading file...")
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        print(file.filename)
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            print("File verified. Saving.")
+            filename = secure_filename(file.filename)
+            os.remove("videos/current.mp4")
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], "current.mp4"))
+            broadcast("refresh_video","")
+            return render_template('index.html', sync_mode=socketio.async_mode)
+    else:
+        return render_template('index.html', sync_mode=socketio.async_mode)
 
 
 @socketio.on("connect")

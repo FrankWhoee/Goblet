@@ -8,11 +8,11 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-     <link href="../css/video-js.css" rel="stylesheet" />
+    <link href="../css/video-js.css" rel="stylesheet"/>
     <link rel="stylesheet" href="../css/style.css?v=1">
     <title>Goblet</title>
 </head>
-<body style="background-color: #242424">
+<body class="text-center" style="background-color: #242424">
 <!--#ba4c28-->
 <!-- Image and text -->
 <nav class="navbar navbar-dark">
@@ -22,26 +22,37 @@
     </a>
     <span class="navbar-text" style="color: red;">
         <a class="button-blue mr-4" id="host_button" onclick="registerAsHost()">REGISTER AS HOST</a>
-      <span class="dot mr-2"></span><a style="color: red; font-size: larger" id="viewers">1</a>&nbsp;<a style="color: red; font-size: larger" id="stupid">VIEWER</a>
+      <span class="dot mr-2"></span><a style="color: red; font-size: larger" id="viewers">1</a>&nbsp;<a
+            style="color: red; font-size: larger" id="stupid">VIEWER</a>
     </span>
 </nav>
 <video
-    id="main"
-    class="video-js vjs-big-play-centered"
-    controls
-    preload="auto"
-    poster="../assets/logo-words.svg"
-    data-setup="{}"
-  >
-    <source src="../videos/Harry.Potter.and.the.Goblet.of.Fire.2005.1080p.BrRip.x264.YIFY.mp4" type="video/mp4" />
+        id="main"
+        class="video-js vjs-big-play-centered"
+        style="height: 80vh; width: 100vw"
+        controls
+        preload="auto"
+        poster="../assets/logo-words.svg"
+        data-setup="{}"
+>
+    <source src="../videos/current.mp4" type="video/mp4"/>
     <p class="vjs-no-js">
-      To view this video please enable JavaScript, and consider upgrading to a
-      web browser that
-      <a href="https://videojs.com/html5-video-support/" target="_blank"
+        To view this video please enable JavaScript, and consider upgrading to a
+        web browser that
+        <a href="https://videojs.com/html5-video-support/" target="_blank"
         >supports HTML5 video</a
-      >
+        >
     </p>
-  </video>
+</video>
+<div class="container mt-3 text-center">
+    <form method="post" enctype="multipart/form-data">
+<!--        <button class="button-blue" onclick="document.getElementById('getFile').click()">UPLOAD</button>-->
+        <label for="getFile">UPLOAD</label>
+        <input type='file' id="getFile" name=file>
+        <button class="button-blue" onclick="document.getElementById('submitbutton').click()">➤</button>
+        <input type='submit' value=Upload id="submitbutton" style="display:none">
+    </form>
+</div>
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

@@ -65,10 +65,16 @@ $(document).ready(function () {
             document.getElementById("host_button").classList.remove("off")
         }
     })
+    socket.on('refresh_video', function (message) {
+        player.src({src: '../videos/current.mp4', type: 'video/mp4'});
+        player.load()
+        console.log("Refreshed video.")
+    })
     $.ajax({
         type: "GET",
         url: '/time?id=' + id,
         success: function (response) {
+            ignoreNextSeek = true
             player.currentTime(parseInt(response))
         },
         error: function (response) {
@@ -76,6 +82,9 @@ $(document).ready(function () {
         }
     });
     updateViewerCount()
+    player.src({src: '../videos/current.mp4', type: 'video/mp4'});
+    player.load()
+    console.log("Refreshed video.")
 })
 
 function setViewerCount(count) {
@@ -132,7 +141,7 @@ player.on('pause', function (event) {
     if (!ignoreNextPause) {
         $.ajax({
             type: "GET",
-            url: '/sync?mode=pause',
+            url: '/sync?mode=pause&id=' + id,
             success: function (response) {
                 Swal.fire({
                     position: 'top',
@@ -159,7 +168,7 @@ player.on('play', function (event) {
     if (!ignoreNextPlay) {
         $.ajax({
             type: "GET",
-            url: '/sync?mode=play',
+            url: '/sync?mode=play&id=' + id,
             success: function (response) {
                 Swal.fire({
                     position: 'top',
