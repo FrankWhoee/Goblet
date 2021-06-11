@@ -8,8 +8,9 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+     <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet" />
     <link rel="stylesheet" href="../css/style.css?v=1">
-    <title>Light It Up</title>
+    <title>Goblet</title>
 </head>
 <body>
 <!--#ba4c28-->
@@ -19,107 +20,24 @@
         <img src="../assets/logo-words.svg" style="height: 5vh" class="d-inline-block align-top mr-3"
              alt="">
     </a>
-    <form class="form-inline">
-        <button class="btn btn-danger my-2 my-sm-0 px-4 chinese" style="border-radius: 20px" type="button"
-                onclick="switchMode()">妈妈模式: OFF
-        </button>
-    </form>
 </nav>
-<div class="container my-5">
-    <h2 style="font-family: Dual">AMBIENCE</h2>
-    <div class="row ">
-        <div class="col-sm-auto">
-            <div class="text-center" data-toggle="tooltip" title="" data-original-title="Turn on lights">
-                <a class="squarebutton" style="background-color: #ffb300"
-                   onclick="ambience('light')"><img src="../assets/icons/sun.svg"></a>
-            </div>
-        </div>
-        <div class="col-sm-auto">
-            <div class="text-center" data-toggle="tooltip" title="" data-original-title="Turn off lights">
-                <a class="squarebutton" style="background-color: black"
-                   onclick="ambience('off')"><img src="../assets/icons/power.svg"></a>
-            </div>
-        </div>
-        <div class="col-sm-auto">
-            <div class="text-center" data-toggle="tooltip" title="" data-original-title="Dim lights">
-                <a class="squarebutton" style="background-color: darkblue"
-                   onclick="ambience('dim')"><img src="../assets/icons/moon.svg"></a>
-            </div>
-        </div>
-        <div class="col-sm-auto">
-            <div class="text-center" data-toggle="tooltip" title="" data-original-title="Super dim lights">
-                <a class="squarebutton" style="background-color: saddlebrown"
-                   onclick="ambience('superdim')"><img src="../assets/icons/sunset.svg"></a>
-            </div>
-        </div>
-        <div class="col-sm-auto">
-            <div class="text-center" data-toggle="tooltip" title="" data-original-title="Red super dim lights">
-                <a class="squarebutton" style="background-color: #c70000"
-                   onclick="ambience('reddim')"><img src="../assets/icons/battery-charging.svg"></a>
-            </div>
-        </div>
-        <div class="col-sm-auto">
-            <div class="text-center" data-toggle="tooltip" title="" data-original-title="Rainbow mode">
-                <a class="squarebutton" style="background-color: deeppink"
-                   onclick="ambience('party')"><img src="../assets/icons/fireworks.svg"></a>
-            </div>
-        </div>
-        <div class="col-sm-auto">
-            <div class="text-center" data-toggle="tooltip" title="" data-original-title="Custom mode. Coming soon!">
-                <a class="squarebutton" style="background-color: darkseagreen"
-                   onclick=""><img src="../assets/icons/settings.svg"></a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container my-5">
-    <h2 style="font-family: Dual">SIGNALS</h2>
-    <div class="row ">
-        <div class="col-sm-auto">
-            <div class="text-center" data-toggle="tooltip" title="" data-original-title="Emergency signal">
-                <a class="squarebutton" style="background-color: #ff2a2a"
-                   onclick="signal('emergency')"><img src="../assets/icons/alert-triangle.svg"></a>
-            </div>
-        </div>
-        <div class="col-sm-auto">
-            <div class="text-center" data-toggle="tooltip" title="" data-original-title="Kitchen signal">
-                <a class="squarebutton" style="background-color: #ff6600"
-                   onclick="signal('kitchen')"><img src="../assets/icons/coffee.svg"></a>
-            </div>
-        </div>
-        <div class="col-sm-auto">
-            <div class="text-center" data-toggle="tooltip" title="" data-original-title="Dad's office signal">
-                <a class="squarebutton" style="background-color: #00aad4"
-                   onclick="signal('dad')"><img src="../assets/icons/database.svg"></a>
-            </div>
-        </div>
-        <div class="col-sm-auto">
-            <div class="text-center" data-toggle="tooltip" title="" data-original-title="Theater signal">
-                <a class="squarebutton" style="background-color: #4400aa"
-                   onclick="signal('theater')"><img src="../assets/icons/film.svg"></a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container my-5">
-    <h2 style="font-family: Dual">FUNCTIONS</h2>
-    <div class="row ">
-        <div class="col-sm-auto">
-            <a class="squarebutton" style="background-color: #5fd35f"
-               onclick="func('sun')"><img src="../assets/icons/calendar.svg"></a>
-        </div>
-        <div class="col-sm-auto">
-            <a class="squarebutton" style="background-color: #9955ff"
-               onclick="func('sun')"><img src="../assets/icons/clock.svg"></a>
-        </div>
-        <div class="col-sm-auto">
-            <a class="squarebutton" style="background-color: coral"
-               onclick="func('sun')"><img src="../assets/icons/bell.svg"></a>
-        </div>
-    </div>
-</div>
+<video
+    id="main"
+    class="video-js"
+    controls
+    preload="auto"
+    poster="../assets/logo.svg"
+    data-setup="{}"
+  >
+    <source src="../videos/Harry.Potter.and.the.Goblet.of.Fire.2005.1080p.BrRip.x264.YIFY.mp4" type="video/mp4" />
+    <p class="vjs-no-js">
+      To view this video please enable JavaScript, and consider upgrading to a
+      web browser that
+      <a href="https://videojs.com/html5-video-support/" target="_blank"
+        >supports HTML5 video</a
+      >
+    </p>
+  </video>
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -133,6 +51,8 @@
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
+<script src="https://cdn.socket.io/4.0.1/socket.io.js"></script>
 <script src="../js/main.js"></script>
 </body>
 </html>

@@ -1,5 +1,9 @@
  $('[data-toggle="tooltip"]').tooltip();
 
+$(document).ready(function() {
+            socket = io()
+})
+
 function switchMode() {
     $.ajax({
         type: "GET",
@@ -36,125 +40,17 @@ function switchMode() {
     });
 }
 
-function triggerCall() {
-    $.ajax({
-        type: "GET",
-        url: '/momalert',
-        success: function (response) {
-            var mothersday = new Date("9/5/2021");
-            var todaysDate = new Date();
-            if (mothersday.setHours(0, 0, 0, 0) == todaysDate.setHours(0, 0, 0, 0)) {
-                toggleConfetti();
-                Swal.fire({
-                    position: 'top',
-                    icon: 'success',
-                    title: '母亲节快乐！',
-                    showConfirmButton: false,
-                    timer: 10000,
-                    backdrop: false,
-                    toast: true,
-                    customClass: {
-                        border: '5px solid black'
-                    }
-                })
-            } else {
-                Swal.fire({
-                    position: 'top',
-                    icon: 'success',
-                    title: '叫了宝宝了!',
-                    showConfirmButton: false,
-                    timer: 5000,
-                    backdrop: false,
-                    toast: true,
-                    customClass: {
-                        border: '5px solid black'
-                    }
-                })
-            }
-        },
-        error: function (response) {
-            Swal.fire({
-                position: 'top',
-                icon: 'error',
-                title: '出问题了！',
-                showConfirmButton: false,
-                timer: 5000,
-                backdrop: false,
-                toast: true,
-                customClass: {
-                    border: '5px solid black'
-                }
-            })
-        }
-    });
+var player = videojs("main")
+
+function seek(time){
+    player.currentTime(time);
 }
 
-function ambience(type) {
-    $.ajax({
-        type: "GET",
-        url: '/ambience?v=' + type,
-        success: function (response) {
-            Swal.fire({
-                position: 'top',
-                icon: 'success',
-                title: 'Ambience set.',
-                showConfirmButton: false,
-                timer: 5000,
-                backdrop: false,
-                toast: true,
-                customClass: {
-                    border: '5px solid black'
-                }
-            })
-        },
-        error: function (response) {
-            Swal.fire({
-                position: 'top',
-                icon: 'error',
-                title: 'Something went wrong!',
-                showConfirmButton: false,
-                timer: 5000,
-                backdrop: false,
-                toast: true,
-                customClass: {
-                    border: '5px solid black'
-                }
-            })
-        }
-    });
+function pause(){
+    player.pause()
 }
 
-function signal(type) {
-    $.ajax({
-        type: "GET",
-        url: '/signal?v=' + type,
-        success: function (response) {
-            Swal.fire({
-                position: 'top',
-                icon: 'success',
-                title: 'Signal sent.',
-                showConfirmButton: false,
-                timer: 5000,
-                backdrop: false,
-                toast: true,
-                customClass: {
-                    border: '5px solid black'
-                }
-            })
-        },
-        error: function (response) {
-            Swal.fire({
-                position: 'top',
-                icon: 'error',
-                title: 'Something went wrong!',
-                showConfirmButton: false,
-                timer: 5000,
-                backdrop: false,
-                toast: true,
-                customClass: {
-                    border: '5px solid black'
-                }
-            })
-        }
-    });
+function play(){
+    player.play()
+
 }
