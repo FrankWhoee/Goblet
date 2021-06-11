@@ -43,16 +43,18 @@ $(document).ready(function () {
         });
     })
     socket.on('ask_time', function (message) {
-        $.ajax({
-            type: "GET",
-            url: '/time?id=' + id + '&value=' + player.currentTime().toString(),
-            success: function (response) {
+        if (message === id) {
+            $.ajax({
+                type: "GET",
+                url: '/time?id=' + id + '&value=' + player.currentTime().toString(),
+                success: function (response) {
 
-            },
-            error: function (response) {
+                },
+                error: function (response) {
 
-            }
-        });
+                }
+            });
+        }
     })
     socket.on('host_declaration', function (message) {
         if (message === id) {
@@ -65,7 +67,7 @@ $(document).ready(function () {
     })
     $.ajax({
         type: "GET",
-        url: '/time',
+        url: '/time?id=' + id,
         success: function (response) {
             player.currentTime(parseInt(response))
         },

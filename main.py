@@ -58,12 +58,11 @@ def time_sync():
     global current_time
     global time_ask_complete
     if "value" in request.args and request.args.get("id") == host_id:
-        print(request.args.get("value"))
         current_time = floor(float(request.args.get("value")))
         time_ask_complete = True
     elif host_id == "":
         return "0"
-    else:
+    elif host_id != request.args.get("id"):
         broadcast("ask_time", host_id)
         time_waited = 0
         time_ask_complete = False
@@ -74,6 +73,8 @@ def time_sync():
             host_id = ""
             return "0"
         return str(current_time)
+    else:
+        return "0"
     return Response(status=200)
 
 
