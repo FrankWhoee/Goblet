@@ -7,7 +7,7 @@ var ignoreNextPlay = false
 var ignoreNextPause = false
 $(document).ready(function () {
     for (i = 0; i < 50; i++) {
-        id += String.fromCharCode(96 + Math.round(Math.random(25) * 25))
+        id += String.fromCharCode(96 + Math.round(Math.random(26) * 26))
     }
     console.log(id)
     socket = io()
@@ -30,13 +30,103 @@ $(document).ready(function () {
             seek(parseInt(time))
         }
     })
+    socket.on('role_call', function (message) {
+        $.ajax({
+            type: "GET",
+            url: '/register?id=' + id,
+            success: function (response) {
 
+            },
+            error: function (response) {
+
+            }
+        });
+    })
+    socket.on('ask_time', function (message) {
+        $.ajax({
+            type: "GET",
+            url: '/time?id=' + id + '&value=' + player.currentTime().toString(),
+            success: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+        });
+    })
+    socket.on('host_declaration', function (message) {
+        if (message === id) {
+            document.getElementById("host_button").innerText = "YOU ARE HOST"
+            document.getElementById("host_button").classList.add("off")
+        } else {
+            document.getElementById("host_button").innerText = "REGISTER AS HOST"
+            document.getElementById("host_button").classList.remove("off")
+        }
+    })
+    $.ajax({
+        type: "GET",
+        url: '/time',
+        success: function (response) {
+            player.currentTime(parseInt(response))
+        },
+        error: function (response) {
+
+        }
+    });
+    updateViewerCount()
 })
+
+function setViewerCount(count) {
+    document.getElementById("viewers").innerText = count
+    if (parseInt(count) !== 1) {
+        document.getElementById("stupid").innerText = "VIEWERS"
+    } else {
+        document.getElementById("stupid").innerText = "VIEWER"
+    }
+}
+
+function registerAsHost() {
+    $.ajax({
+        type: "GET",
+        url: '/register?id=' + id + "&host=true",
+        success: function (response) {
+            Swal.fire({
+                position: 'top',
+                icon: 'success',
+                title: 'Registration as host successful',
+                showConfirmButton: false,
+                timer: 2000,
+                toast: true,
+                customClass: {
+                    border: '5px solid black'
+                }
+            })
+            document.getElementById("host_button").innerText = "YOU ARE HOST"
+            document.getElementById("host_button").classList.add("off")
+        },
+        error: function (response) {
+
+        }
+    });
+}
+
+function updateViewerCount() {
+    $.ajax({
+        type: "GET",
+        url: '/count',
+        success: function (response) {
+            setViewerCount(response)
+            setTimeout(updateViewerCount, 2500)
+        },
+        error: function (response) {
+
+        }
+    });
+}
 
 var player = videojs("main")
 
 player.on('pause', function (event) {
-
     if (!ignoreNextPause) {
         $.ajax({
             type: "GET",
@@ -58,13 +148,12 @@ player.on('pause', function (event) {
 
             }
         });
-    }else{
+    } else {
         ignoreNextPause = false
     }
 })
 
 player.on('play', function (event) {
-
     if (!ignoreNextPlay) {
         $.ajax({
             type: "GET",
@@ -87,7 +176,7 @@ player.on('play', function (event) {
             }
         });
         player.currentTime(player.currentTime());
-    }else{
+    } else {
         ignoreNextPlay = false
     }
 })
@@ -115,10 +204,15 @@ player.on('seeked', function (event) {
 
             }
         });
-    }else{
+    } else {
         ignoreNextSeek = false
     }
 })
+
+function resetPlayPauseFlags() {
+    ignoreNextPause = false
+    ignoreNextPlay = false
+}
 
 function seek(time) {
     player.currentTime(time);
@@ -128,9 +222,11 @@ function seek(time) {
 function pause() {
     player.pause()
     ignoreNextPause = true
+    setTimeout(resetPlayPauseFlags, 100)
 }
 
 function play() {
     player.play()
     ignoreNextPlay = true
+    setTimeout(resetPlayPauseFlags, 100)
 }

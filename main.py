@@ -1,10 +1,18 @@
+from math import floor
+
 from flask import Flask, render_template, Response, send_from_directory, session, request
 from flask_socketio import SocketIO, emit
 import json
+import time
 
 app = Flask(__name__)
 app.secret_key = 'jeV43V1KTG0ywgO1VGOdUfWzIiU51KoLYcrAIqdtpd7ukQC8LOKSgSjC2fvT'.encode('utf8')
 socketio = SocketIO(app, async_mode=None)
+
+connected_list = []
+host_id = ""
+time_ask_complete = True
+current_time = 0
 
 
 @app.route('/assets/<path>')
@@ -32,16 +40,67 @@ def sync():
     mode = request.args.get("mode")
     id = request.args.get("id")
     if mode == "pause":
-        broadcast("pause",id)
+        broadcast("pause", id)
     elif mode == "play":
-        broadcast("play",id)
+        broadcast("play", id)
     elif mode == "seek":
         try:
             time = request.args.get("time")
         except:
             return "Requires time and ID for seeking."
-        broadcast("seek",time + "-" + id)
+        broadcast("seek", time + "-" + id)
     return Response(status=200)
+
+
+@app.route('/time')
+def time_sync():
+    global host_id
+    global current_time
+    global time_ask_complete
+    if "value" in request.args and request.args.get("id") == host_id:
+        print(request.args.get("value"))
+        current_time = floor(float(request.args.get("value")))
+        time_ask_complete = True
+    elif host_id == "":
+        return "0"
+    else:
+        broadcast("ask_time", host_id)
+        time_waited = 0
+        time_ask_complete = False
+        while not time_ask_complete or time_waited > 0.5:
+            time.sleep(0.1)
+            time_waited += 0.1
+        if time_waited > 0.5:
+            host_id = ""
+            return "0"
+        return str(current_time)
+    return Response(status=200)
+
+
+@app.route('/register')
+def register_user():
+    global host_id
+    id = request.args.get("id")
+    if id not in connected_list:
+        connected_list.append(id)
+        print("Registered " + id)
+    else:
+        print(id + " is already registered.")
+    if host_id == "" or ("host" in request.args and request.args.get("host") == "true"):
+        host_id = id
+        print("Registered " + id + " as host.")
+        broadcast("host_declaration", host_id)
+    return Response(status=200)
+
+
+@app.route('/count')
+def count_connected():
+    return str(len(connected_list))
+
+
+def role_call():
+    connected_list.clear()
+    broadcast("role_call", "")
 
 
 @app.route('/')
@@ -52,11 +111,13 @@ def index():
 
 @socketio.on("connect")
 def connection():
+    role_call()
     print("Connected a user.")
 
 
 @socketio.on('disconnect')
 def disconnect():
+    role_call()
     print('A user disconnected')
 
 

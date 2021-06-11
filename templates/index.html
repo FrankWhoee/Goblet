@@ -15,11 +15,15 @@
 <body style="background-color: #242424">
 <!--#ba4c28-->
 <!-- Image and text -->
-<nav class="navbar navbar-light">
+<nav class="navbar navbar-dark">
     <a class="navbar-brand" href="#">
         <img src="../assets/logo-words.svg" style="height: 5vh" class="d-inline-block align-top mr-3"
              alt="">
     </a>
+    <span class="navbar-text" style="color: red;">
+        <a class="button-blue mr-4" id="host_button" onclick="registerAsHost()">REGISTER AS HOST</a>
+      <span class="dot mr-2"></span><a style="color: red; font-size: larger" id="viewers">1</a>&nbsp;<a style="color: red; font-size: larger" id="stupid">VIEWER</a>
+    </span>
 </nav>
 <video
     id="main"
