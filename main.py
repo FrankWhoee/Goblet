@@ -6,6 +6,7 @@ from flask_socketio import SocketIO, emit
 import json
 import time
 from werkzeug.utils import secure_filename
+import threading
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'videos'
@@ -97,10 +98,15 @@ def register_user():
     else:
         print(id + " is already registered.")
     if host_id == "" or ("host" in request.args and request.args.get("host") == "true"):
-        host_id = id
-        print("Registered " + id + " as host.")
-        broadcast("host_declaration", host_id)
+        assign_host(id)
     return Response(status=200)
+
+
+def assign_host(id):
+    global host_id
+    host_id = id
+    print("Registered " + id + " as host.")
+    broadcast("host_declaration", host_id)
 
 
 @app.route('/count')
@@ -160,6 +166,11 @@ def disconnect():
 def broadcast(type, data):
     socketio.emit(type, data, broadcast=True)
 
+def check_host_timer():
+    if host_id not in connected_list and len(connected_list) > 0:
+        assign_host(connected_list[0])
+    threading.Timer(3, check_host_timer).start()
 
 if __name__ == '__main__':
+    threading.Timer(3, check_host_timer).start()
     socketio.run(app, host="0.0.0.0", debug=True)
