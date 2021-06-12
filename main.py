@@ -94,13 +94,13 @@ def sync():
     return Response(status=200)
 
 
-@app.route('/time')
+@app.route('/timesync')
 def time_sync():
     global host_id
     global current_time
     global time_ask_complete
     if "value" in request.args and request.args.get("id") == host_id:
-        current_time = floor(float(request.args.get("value")))
+        current_time = float(request.args.get("value"))
         time_ask_complete = True
     elif host_id == "":
         return "0"
@@ -119,6 +119,15 @@ def time_sync():
         return "0"
     return Response(status=200)
 
+@app.route('/time')
+def saveload_time():
+    if "value" in request.args:
+        session["time"] = request.args.get("value")
+        return Response(status=200)
+    if "time" in session:
+        return session["time"]
+    else:
+        return "0"
 
 @app.route('/register')
 def register_user():

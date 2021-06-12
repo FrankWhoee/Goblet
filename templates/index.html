@@ -47,14 +47,24 @@
     </p>
 </video>
 </div>
-<div class="container mt-3 text-center">
-    <form method="post" enctype="multipart/form-data">
-<!--        <button class="button-blue" onclick="document.getElementById('getFile').click()">UPLOAD</button>-->
+<div class="mt-4 text-center px-3">
+    <div class="row">
+        <div class="col">
+
+        </div>
+        <div class="col text-center">
+            <form method="post" enctype="multipart/form-data">
         <label for="getFile">UPLOAD</label>
         <input type='file' id="getFile" name=file>
         <button class="button-blue" onclick="document.getElementById('submitbutton').click()">➤</button>
         <input type='submit' value=Upload id="submitbutton" style="display:none">
     </form>
+        </div>
+        <div class="col text-right">
+            <button class="button-blue" onclick="savetime()">SAVE TIME</button>
+            <button class="button-blue" onclick="seeksavetime()">GO TO <span id="goto">0</span></button>
+        </div>
+    </div>
 </div>
 
 <!-- Optional JavaScript -->

@@ -5,6 +5,10 @@ var id = ""
 var ignoreNextSeek = false
 var ignoreNextPlay = false
 var ignoreNextPause = false
+var saveTime = 0
+var isHost = false
+var isMobile = /Mobi/i.test(window.navigator.userAgent)
+var isBackground = false
 $(document).ready(function () {
     $.ajax({
         type: "GET",
@@ -53,7 +57,7 @@ $(document).ready(function () {
         if (message === id) {
             $.ajax({
                 type: "GET",
-                url: '/time?id=' + id + '&value=' + player.currentTime().toString(),
+                url: '/timesync?id=' + id + '&value=' + player.currentTime().toString(),
                 success: function (response) {
 
                 },
@@ -67,29 +71,91 @@ $(document).ready(function () {
         if (message === id) {
             document.getElementById("host_button").innerText = "YOU ARE HOST"
             document.getElementById("host_button").classList.add("off")
+            isHost = true
         } else {
             document.getElementById("host_button").innerText = "REGISTER AS HOST"
             document.getElementById("host_button").classList.remove("off")
+            isHost = false
         }
     })
     socket.on('refresh_video', function (message) {
         refreshplayer()
         console.log("Refreshed video.")
     })
+    syncToHost()
+    updateViewerCount()
+    refreshplayer()
+    displaysavetime()
+})
+
+function syncToHost() {
+    if (!isHost) {
+        $.ajax({
+            type: "GET",
+            url: '/timesync?id=' + id,
+            success: function (response) {
+                ignoreNextSeek = true
+                player.currentTime(parseFloat(response))
+            },
+            error: function (response) {
+
+            }
+        });
+    }
+}
+
+if (isMobile) {
+    document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === 'visible') {
+            isBackground = false
+        } else {
+            isBackground = true
+        }
+    })
+}
+
+
+function savetime() {
     $.ajax({
         type: "GET",
-        url: '/time?id=' + id,
+        url: '/time?value=' + player.currentTime().toString(),
         success: function (response) {
-            ignoreNextSeek = true
-            player.currentTime(parseInt(response))
+            Swal.fire({
+                position: 'top',
+                icon: 'success',
+                title: 'Time saved successfully',
+                showConfirmButton: false,
+                timer: 2000,
+                toast: true,
+                customClass: {
+                    border: '5px solid black'
+                }
+            })
+            displaysavetime()
         },
         error: function (response) {
 
         }
     });
-    updateViewerCount()
-    refreshplayer()
-})
+}
+
+function seeksavetime() {
+    seek(saveTime)
+}
+
+function displaysavetime() {
+    $.ajax({
+        type: "GET",
+        url: '/time',
+        success: function (response) {
+            saveTime = parseFloat(response)
+            document.getElementById("goto").innerText = new Date(parseFloat(response) * 1000).toISOString().substr(11, 8)
+        },
+        error: function (response) {
+
+        }
+    });
+}
 
 function refreshplayer() {
     $.ajax({
@@ -158,7 +224,7 @@ function updateViewerCount() {
 var player = videojs("main")
 
 player.on('pause', function (event) {
-    if (!ignoreNextPause) {
+    if (!ignoreNextPause && (!isMobile || !isBackground)) {
         $.ajax({
             type: "GET",
             url: '/sync?mode=pause&id=' + id,
@@ -185,7 +251,7 @@ player.on('pause', function (event) {
 })
 
 player.on('play', function (event) {
-    if (!ignoreNextPlay) {
+    if (!ignoreNextPlay && (!isMobile || !isBackground)) {
         $.ajax({
             type: "GET",
             url: '/sync?mode=play&id=' + id,
@@ -206,14 +272,14 @@ player.on('play', function (event) {
 
             }
         });
-        player.currentTime(player.currentTime());
+        syncToHost()
     } else {
         ignoreNextPlay = false
     }
 })
 
 player.on('seeked', function (event) {
-    if (!ignoreNextSeek) {
+    if (!ignoreNextSeek && (!isMobile || !isBackground)) {
         $.ajax({
             type: "GET",
             url: '/sync?mode=seek&time=' + player.currentTime().toString() + "&id=" + id,
