@@ -1,7 +1,5 @@
 import os
 import re
-from math import floor
-
 from flask import Flask, render_template, Response, send_from_directory, session, request, flash, redirect, url_for
 from flask_socketio import SocketIO, emit
 import json
