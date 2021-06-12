@@ -37,9 +37,9 @@ Whenever a user pauses/plays/seeks the video, a GET request is sent to the serve
 informs it of the details of the action, and the server then broadcasts via the socket connection
 to all clients to perform the same action on their video players.
 
-### Fantastic Problems and How to Solve Them
+### Fantastic Problems and How to Solve Them 🦁
 
-#### Action Recursion
+#### Action Recursion 🔁
 
 The main problem to solve is action recursion. Because every pause/play/seek action unavoidably triggers
 a pause/play/seek action on another client, the same action will be sent back to the server, and then broadcasted again,
@@ -51,7 +51,7 @@ I didn't spend any more than 1 hour searching to see if this is possible, so ins
 receives an action from the server, it will ignore the next action because it will have been
 from itself playing/pausing/seeking. After solving this problem, the other ones are mostly QOL.
 
-####  Host Syncing
+####  Host Syncing ↕️
 Before making Goblet, my friends and I were using twoseven to host videos. This platform's
 most annoying problem was the fact that whenever someone joined, it restarted the video.
 This happened because to begin peforming play/pause/seek actions on VideoJS, you have to first
@@ -77,7 +77,7 @@ but all users. This is to hopefully prevent any desynchronization that happens, 
 because non-hosts are still able to pause and play the video, as well as seek to where they want
 if they want to show the party a particular moment, or if the host isn't there.
 
-#### Upload Cache Problems
+#### Upload Cache Problems 🔼
 This was an unexpected problem to run into, but VideoJS or the browser likes to 
 cache absolutely everything, so as long as you play a video with the same name, even if you 
 changed the source, it will still play the old video. This incredibly frustrating issue was resolved
@@ -88,21 +88,21 @@ where the videos go, they go to the .video folder, but I would prefer if you don
 it's well automated and everytime you upload a video it deletes the previous, so it won't build up
 in size.
 
-### Additional Features - Lightning Round
+### Additional Features - Lightning Round ⚡
 
-#### Viewer Count
+#### Viewer Count 🔴
 Remember the role call and ID stuff we added to solve the host syncing problem? Well turns out
 you can use that to display how many current viewers there are. Every few seconds the client will
 ping the server to check the viewer count and display it on the top right.
 
-#### Spot Saving
+#### Spot Saving 🔖
 We were using cookies to save IDs, but turns out it's easy to use that same feature to
 save where you left off on a video as well. When the user saves a time, a GET request is
 sent to the server to save the current video time, and everytime the page is loaded,
 a GET request is made to get the saved video time, and another click will seek the player
 to that time.
 
-#### Refreshing
+#### Refreshing 🔄
 If the server admin wants to manually replace a file in the `.video` folder (smh,
 touching the .video folder after I told you not to), because the file in question
 is really big and it's easier to transfer it in the folder locally rather than 
