@@ -6,10 +6,17 @@ var ignoreNextSeek = false
 var ignoreNextPlay = false
 var ignoreNextPause = false
 $(document).ready(function () {
-    for (i = 0; i < 50; i++) {
-        id += String.fromCharCode(96 + Math.round(Math.random(26) * 26))
-    }
-    console.log(id)
+    $.ajax({
+        type: "GET",
+        url: '/id',
+        success: function (response) {
+            id = response
+            console.log(id)
+        },
+        error: function (response) {
+
+        }
+    });
     socket = io()
     socket.on('pause', function (message) {
         retrieved_id = message
@@ -89,7 +96,7 @@ function refreshplayer() {
         type: "GET",
         url: '/file',
         success: function (response) {
-            player.src({src: '../videos/'+response, type: 'video/mp4'});
+            player.src({src: '../.videos/' + response, type: 'video/mp4'});
             player.load()
             console.log("Refreshed video.")
         },

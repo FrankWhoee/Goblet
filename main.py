@@ -1,4 +1,5 @@
 import os
+import re
 from math import floor
 
 from flask import Flask, render_template, Response, send_from_directory, session, request, flash, redirect, url_for
@@ -7,10 +8,25 @@ import json
 import time
 from werkzeug.utils import secure_filename
 import threading
+import uuid
+
+if os.path.exists("secrets.json"):
+    print("Found secrets.json")
+    secrets = json.load(open("secrets.json"))
+else:
+    print("secrets.json not found. Creating secrets.json.")
+    secrets = {
+        "app_secret": str(uuid.uuid4())
+    }
+    json.dump(secrets, open("secrets.json","w"))
+
+if not os.path.exists(".videos"):
+    print(".videos directory not found. Creating .videos.")
+    os.mkdir(".videos")
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'videos'
-app.secret_key = 'jeV43V1KTG0ywgO1VGOdUfWzIiU51KoLYcrAIqdtpd7ukQC8LOKSgSjC2fvT'.encode('utf8')
+app.config['UPLOAD_FOLDER'] = '.videos'
+app.secret_key = secrets["app_secret"]
 socketio = SocketIO(app, async_mode=None)
 
 ALLOWED_EXTENSIONS = {'mp4'}
@@ -18,7 +34,23 @@ connected_list = []
 host_id = ""
 time_ask_complete = True
 current_time = 0
-current_video_id = int(os.listdir("videos")[0].split(".")[0])
+
+current_video_id = -1
+
+if len(os.listdir(".videos")) > 1:
+    for f in os.listdir(".videos"):
+        if re.fullmatch("\d*\.mp4", f) is not None and current_video_id == -1:
+            current_video_id = int(f.split(".")[0])
+        else:
+            os.remove(".videos/" + f)
+elif len(os.listdir(".videos")) == 0:
+    current_video_id = 0
+elif len(os.listdir(".videos")) == 1:
+    try:
+        current_video_id = int(os.listdir(".videos")[0].split(".")[0])
+    except:
+        current_video_id = 0
+
 
 @app.route('/assets/<path>')
 def send_assets(path):
@@ -35,9 +67,9 @@ def send_js(path):
     return send_from_directory('js', path)
 
 
-@app.route('/videos/<path>')
+@app.route('/.videos/<path>')
 def send_videos(path):
-    return send_from_directory('videos', path)
+    return send_from_directory('.videos', path)
 
 
 def allowed_file(filename):
@@ -113,10 +145,22 @@ def assign_host(id):
 def count_connected():
     return str(len(connected_list))
 
+
 @app.route('/file')
 def getfile():
-    files = os.listdir("videos")
+    files = os.listdir(".videos")
+    for f in files:
+        if f == str(current_video_id) + ".mp4":
+            return f
     return files[0]
+
+
+@app.route('/id')
+def giveid():
+    if "id" not in session:
+        session["id"] = str(uuid.uuid4())
+    return session["id"]
+
 
 def role_call():
     connected_list.clear()
@@ -141,11 +185,11 @@ def index():
         if file and allowed_file(file.filename):
             print("File verified. Saving.")
             filename = secure_filename(file.filename)
-            if os.path.exists("videos/" + str(current_video_id) + ".mp4"):
-                os.remove("videos/" + str(current_video_id) + ".mp4")
+            if os.path.exists(".videos/" + str(current_video_id) + ".mp4"):
+                os.remove(".videos/" + str(current_video_id) + ".mp4")
             current_video_id += 1
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(current_video_id) + ".mp4"))
-            broadcast("refresh_video",str(current_video_id) + ".mp4")
+            broadcast("refresh_video", str(current_video_id) + ".mp4")
             return render_template('index.html', sync_mode=socketio.async_mode)
     else:
         return render_template('index.html', sync_mode=socketio.async_mode)
@@ -154,22 +198,26 @@ def index():
 @socketio.on("connect")
 def connection():
     role_call()
+    broadcast("host_declaration", host_id)
     print("Connected a user.")
 
 
 @socketio.on('disconnect')
 def disconnect():
     role_call()
+    broadcast("host_declaration", host_id)
     print('A user disconnected')
 
 
 def broadcast(type, data):
     socketio.emit(type, data, broadcast=True)
 
+
 def check_host_timer():
     if host_id not in connected_list and len(connected_list) > 0:
         assign_host(connected_list[0])
     threading.Timer(3, check_host_timer).start()
+
 
 if __name__ == '__main__':
     threading.Timer(3, check_host_timer).start()

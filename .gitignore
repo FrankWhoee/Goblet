@@ -130,4 +130,7 @@ dmypy.json
 
 # IDE Stuff
 .idea
-videos
+
+# Project things
+.videos
+secrets.json
