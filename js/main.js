@@ -157,7 +157,7 @@ function displaysavetime() {
     });
 }
 
-function refreshplayer() {
+function refreshplayer(explicit=false) {
     $.ajax({
         type: "GET",
         url: '/file',
@@ -165,6 +165,19 @@ function refreshplayer() {
             player.src({src: '../.videos/' + response, type: 'video/mp4'});
             player.load()
             console.log("Refreshed video.")
+            if(explicit){
+                Swal.fire({
+                position: 'top',
+                icon: 'success',
+                title: 'Video successfully refreshed.',
+                showConfirmButton: false,
+                timer: 2000,
+                toast: true,
+                customClass: {
+                    border: '5px solid black'
+                }
+            })
+            }
         },
         error: function (response) {
 

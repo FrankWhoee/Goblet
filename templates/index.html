@@ -29,36 +29,36 @@
 </nav>
 <div id="video">
     <video
-        id="main"
-        class="video-js vjs-big-play-centered"
-        style="height: 80vh; width: 100vw"
-        controls
-        preload="auto"
-        poster="../assets/logo-words.svg"
-        data-setup="{}"
->
-    <source src="../.videos/0.mp4" type="video/mp4"/>
-    <p class="vjs-no-js">
-        To view this video please enable JavaScript, and consider upgrading to a
-        web browser that
-        <a href="https://videojs.com/html5-video-support/" target="_blank"
-        >supports HTML5 video</a
-        >
-    </p>
-</video>
+            id="main"
+            class="video-js vjs-big-play-centered"
+            style="height: 80vh; width: 100vw"
+            controls
+            preload="auto"
+            poster="../assets/logo-words.svg"
+            data-setup="{}"
+    >
+        <source src="../.videos/0.mp4" type="video/mp4"/>
+        <p class="vjs-no-js">
+            To view this video please enable JavaScript, and consider upgrading to a
+            web browser that
+            <a href="https://videojs.com/html5-video-support/" target="_blank"
+            >supports HTML5 video</a
+            >
+        </p>
+    </video>
 </div>
 <div class="mt-4 text-center px-3">
     <div class="row">
-        <div class="col">
-
+        <div class="col text-left">
+            <button class="button-blue" onclick="refreshplayer(true)"><img src="../assets/refresh-cw.svg"></button>
         </div>
         <div class="col text-center">
             <form method="post" enctype="multipart/form-data">
-        <label for="getFile">UPLOAD</label>
-        <input type='file' id="getFile" name=file>
-        <button class="button-blue" onclick="document.getElementById('submitbutton').click()">➤</button>
-        <input type='submit' value=Upload id="submitbutton" style="display:none">
-    </form>
+                <label for="getFile">UPLOAD</label>
+                <input type='file' id="getFile" name=file>
+                <button class="button-blue" onclick="document.getElementById('submitbutton').click()">➤</button>
+                <input type='submit' value=Upload id="submitbutton" style="display:none">
+            </form>
         </div>
         <div class="col text-right">
             <button class="button-blue" onclick="savetime()">SAVE TIME</button>
