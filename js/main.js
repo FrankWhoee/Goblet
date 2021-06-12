@@ -66,8 +66,7 @@ $(document).ready(function () {
         }
     })
     socket.on('refresh_video', function (message) {
-        player.src({src: '../videos/current.mp4', type: 'video/mp4'});
-        player.load()
+        refreshplayer()
         console.log("Refreshed video.")
     })
     $.ajax({
@@ -82,10 +81,24 @@ $(document).ready(function () {
         }
     });
     updateViewerCount()
-    player.src({src: '../videos/current.mp4', type: 'video/mp4'});
-    player.load()
-    console.log("Refreshed video.")
+    refreshplayer()
 })
+
+function refreshplayer() {
+    $.ajax({
+        type: "GET",
+        url: '/file',
+        success: function (response) {
+            player.src({src: '../videos/'+response, type: 'video/mp4'});
+            player.load()
+            console.log("Refreshed video.")
+        },
+        error: function (response) {
+
+        }
+    });
+
+}
 
 function setViewerCount(count) {
     document.getElementById("viewers").innerText = count

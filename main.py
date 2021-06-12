@@ -17,7 +17,7 @@ connected_list = []
 host_id = ""
 time_ask_complete = True
 current_time = 0
-
+current_video_id = int(os.listdir("videos")[0].split(".")[0])
 
 @app.route('/assets/<path>')
 def send_assets(path):
@@ -107,6 +107,10 @@ def register_user():
 def count_connected():
     return str(len(connected_list))
 
+@app.route('/file')
+def getfile():
+    files = os.listdir("videos")
+    return files[0]
 
 def role_call():
     connected_list.clear()
@@ -115,6 +119,7 @@ def role_call():
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    global current_video_id
     if request.method == 'POST':
         print("Uploading file...")
         if 'file' not in request.files:
@@ -130,9 +135,11 @@ def index():
         if file and allowed_file(file.filename):
             print("File verified. Saving.")
             filename = secure_filename(file.filename)
-            os.remove("videos/current.mp4")
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], "current.mp4"))
-            broadcast("refresh_video","")
+            if os.path.exists("videos/" + str(current_video_id) + ".mp4"):
+                os.remove("videos/" + str(current_video_id) + ".mp4")
+            current_video_id += 1
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(current_video_id) + ".mp4"))
+            broadcast("refresh_video",str(current_video_id) + ".mp4")
             return render_template('index.html', sync_mode=socketio.async_mode)
     else:
         return render_template('index.html', sync_mode=socketio.async_mode)

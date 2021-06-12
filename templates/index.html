@@ -10,6 +10,7 @@
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="../css/video-js.css" rel="stylesheet"/>
     <link rel="stylesheet" href="../css/style.css?v=1">
+
     <title>Goblet</title>
 </head>
 <body class="text-center" style="background-color: #242424">
@@ -26,7 +27,8 @@
             style="color: red; font-size: larger" id="stupid">VIEWER</a>
     </span>
 </nav>
-<video
+<div id="video">
+    <video
         id="main"
         class="video-js vjs-big-play-centered"
         style="height: 80vh; width: 100vw"
@@ -35,7 +37,7 @@
         poster="../assets/logo-words.svg"
         data-setup="{}"
 >
-    <source src="../videos/current.mp4" type="video/mp4"/>
+    <source src="../videos/0.mp4" type="video/mp4"/>
     <p class="vjs-no-js">
         To view this video please enable JavaScript, and consider upgrading to a
         web browser that
@@ -44,6 +46,7 @@
         >
     </p>
 </video>
+</div>
 <div class="container mt-3 text-center">
     <form method="post" enctype="multipart/form-data">
 <!--        <button class="button-blue" onclick="document.getElementById('getFile').click()">UPLOAD</button>-->
