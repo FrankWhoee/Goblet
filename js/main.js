@@ -157,26 +157,83 @@ function displaysavetime() {
     });
 }
 
-function refreshplayer(explicit=false) {
+// https://www.youtube.com/watch?v=183tEhupiSQ
+
+function youtubeplay() {
+    link = document.getElementById("getLink").value
+    if (link.includes("youtube")) {
+        player.src({src: link, type: 'video/youtube'});
+        $.ajax({
+            type: "GET",
+            url: '/link?v=' + link,
+            success: function (response) {
+                Swal.fire({
+                    position: 'top',
+                    icon: 'success',
+                    title: 'Link uploaded.',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    toast: true,
+                    customClass: {
+                        border: '5px solid black'
+                    }
+                })
+            },
+            error: function (response) {
+                Swal.fire({
+                    position: 'top',
+                    icon: 'error',
+                    title: 'Something went wrong!',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    toast: true,
+                    customClass: {
+                        border: '5px solid black'
+                    }
+                })
+            }
+        });
+    }else{
+        Swal.fire({
+                    position: 'top',
+                    icon: 'error',
+                    title: 'Must be a Youtube link.',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    toast: true,
+                    customClass: {
+                        border: '5px solid black'
+                    }
+                })
+    }
+
+}
+
+function refreshplayer(explicit = false) {
     $.ajax({
         type: "GET",
-        url: '/file',
+        url: '/src',
         success: function (response) {
-            player.src({src: '../.videos/' + response, type: 'video/mp4'});
-            player.load()
+            data = JSON.parse(response)
+            if (data.type === "file") {
+                player.src({src: '../.videos/' + data.src, type: 'video/mp4'});
+                player.load()
+            } else if (data.type === "link") {
+                player.src({src: data.src, type: 'video/youtube'});
+            }
             console.log("Refreshed video.")
-            if(explicit){
+            if (explicit) {
                 Swal.fire({
-                position: 'top',
-                icon: 'success',
-                title: 'Video successfully refreshed.',
-                showConfirmButton: false,
-                timer: 2000,
-                toast: true,
-                customClass: {
-                    border: '5px solid black'
-                }
-            })
+                    position: 'top',
+                    icon: 'success',
+                    title: 'Video successfully refreshed.',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    toast: true,
+                    customClass: {
+                        border: '5px solid black'
+                    }
+                })
             }
         },
         error: function (response) {

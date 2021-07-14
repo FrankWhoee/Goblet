@@ -32,6 +32,8 @@ connected_list = []
 host_id = ""
 time_ask_complete = True
 current_time = 0
+current_link = ""
+current_src_type = "file"
 
 current_video_id = -1
 
@@ -153,13 +155,27 @@ def count_connected():
     return str(len(connected_list))
 
 
-@app.route('/file')
-def getfile():
-    files = os.listdir(".videos")
-    for f in files:
-        if f == str(current_video_id) + ".mp4":
-            return f
-    return files[0]
+@app.route('/src')
+def getsrc():
+    if current_src_type == "file":
+        files = os.listdir(".videos")
+        for f in files:
+            if f == str(current_video_id) + ".mp4":
+                return json.dumps({"src": f, "type": "file"})
+        return json.dumps({"src": files[0], "type":"file"})
+    elif current_src_type == "link":
+        return json.dumps({"src": current_link, "type":"link"})
+
+@app.route('/link')
+def setlink():
+    global current_src_type
+    global current_link
+    if "v" in request.args:
+        current_link = request.args.get("v")
+        current_src_type = "link"
+        broadcast("refresh_video", current_link)
+        return Response(status=200)
+    return Response(status=422)
 
 
 @app.route('/id')
@@ -177,6 +193,8 @@ def role_call():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     global current_video_id
+    global current_src_type
+    global current_link
     if request.method == 'POST':
         print("Uploading file...")
         if 'file' not in request.files:
@@ -196,6 +214,7 @@ def index():
                 os.remove(".videos/" + str(current_video_id) + ".mp4")
             current_video_id += 1
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(current_video_id) + ".mp4"))
+            current_src_type = "file"
             broadcast("refresh_video", str(current_video_id) + ".mp4")
             return render_template('index.html', sync_mode=socketio.async_mode)
     else:
